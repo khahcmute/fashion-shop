@@ -1,22 +1,24 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongoose";
 import Product from "@/models/Product";
+import Category from "@/models/Category";
 
 export async function GET() {
   try {
     await connectDB();
-
-    const products = await Product.find();
+    void Category;
+    const products = await Product.find().populate("category");
 
     return NextResponse.json({
       success: true,
+      count: products.length,
       data: products,
     });
   } catch (error) {
     return NextResponse.json(
       {
         success: false,
-        message: "Lỗi kết nối database",
+        message: "Lỗi khi lấy products",
       },
       { status: 500 },
     );
