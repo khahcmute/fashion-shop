@@ -1,10 +1,17 @@
-import Image from "next/image";
+import Link from "next/link";
 
-export default function Home() {
+export default function HomePage() {
   return (
     <main className="p-6">
       <h1 className="text-3xl font-bold">Fashion Shop</h1>
-      <p className="mt-2">Dự án ecommerce shop thời trang</p>
+      <p className="mt-2 mb-4">Dự án ecommerce shop thời trang</p>
+
+      <Link
+        href="/products"
+        className="inline-block bg-black text-white px-4 py-2 rounded"
+      >
+        Xem sản phẩm
+      </Link>
     </main>
   );
 }
