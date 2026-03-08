@@ -1,5 +1,6 @@
 import "./globals.css";
 import ReduxProvider from "@/store/provider";
+import AuthLoader from "@/components/AuthLoader";
 
 export const metadata = {
   title: "Fashion Shop",
@@ -14,7 +15,10 @@ export default function RootLayout({
   return (
     <html lang="vi">
       <body>
-        <ReduxProvider>{children}</ReduxProvider>
+        <ReduxProvider>
+          <AuthLoader />
+          {children}
+        </ReduxProvider>
       </body>
     </html>
   );
