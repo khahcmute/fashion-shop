@@ -7,6 +7,7 @@ import {
   removeCartItem,
   updateCartItem,
 } from "@/features/cart/cartSlice";
+import Link from "next/link";
 
 export default function CartPage() {
   const dispatch = useAppDispatch();
@@ -90,6 +91,18 @@ export default function CartPage() {
           </div>
         </div>
       )}
+      <div className="pt-4 border-t flex items-center justify-between">
+        <h2 className="text-2xl font-bold">
+          Tổng: {total.toLocaleString("vi-VN")}đ
+        </h2>
+
+        <Link
+          href="/checkout"
+          className="bg-black text-white px-6 py-3 rounded"
+        >
+          Tiến hành thanh toán
+        </Link>
+      </div>
     </main>
   );
 }

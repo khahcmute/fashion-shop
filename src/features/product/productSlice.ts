@@ -45,9 +45,26 @@ const initialState: ProductState = {
 
 export const fetchProducts = createAsyncThunk(
   "product/fetchProducts",
-  async (_, { rejectWithValue }) => {
+  async (
+    params: { search?: string; category?: string } | undefined,
+    { rejectWithValue },
+  ) => {
     try {
-      const res = await fetch("/api/products");
+      const query = new URLSearchParams();
+
+      if (params?.search) {
+        query.set("search", params.search);
+      }
+
+      if (params?.category) {
+        query.set("category", params.category);
+      }
+
+      const url = query.toString()
+        ? `/api/products?${query.toString()}`
+        : "/api/products";
+
+      const res = await fetch(url);
       const result = await res.json();
 
       if (!res.ok) {
