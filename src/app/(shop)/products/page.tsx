@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { fetchProducts } from "@/features/product/productSlice";
 import { fetchCategories } from "@/features/category/categorySlice";
@@ -8,17 +9,32 @@ import ProductCard from "@/components/product/ProductCard";
 
 export default function ProductsPage() {
   const dispatch = useAppDispatch();
+  const searchParams = useSearchParams();
 
   const { products, loading, error } = useAppSelector((state) => state.product);
   const { categories } = useAppSelector((state) => state.category);
 
-  const [search, setSearch] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("");
+  const initialSearch = searchParams.get("search") || "";
+  const initialCategory = searchParams.get("category") || "";
+
+  const [search, setSearch] = useState(initialSearch);
+  const [selectedCategory, setSelectedCategory] = useState(initialCategory);
 
   useEffect(() => {
     dispatch(fetchCategories());
-    dispatch(fetchProducts(undefined));
   }, [dispatch]);
+
+  useEffect(() => {
+    setSearch(initialSearch);
+    setSelectedCategory(initialCategory);
+
+    dispatch(
+      fetchProducts({
+        search: initialSearch,
+        category: initialCategory,
+      }),
+    );
+  }, [dispatch, initialSearch, initialCategory]);
 
   const handleFilter = () => {
     dispatch(
