@@ -53,6 +53,33 @@ export default function AdminProductForm({
     initialData?.variants || [{ color: "", size: "", stock: 0, sku: "" }],
   );
 
+  const [uploading, setUploading] = useState(false);
+  const [images, setImages] = useState<string[]>(initialData?.images || []);
+
+  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const res = await fetch("/api/admin/upload", {
+      method: "POST",
+      body: formData,
+    });
+
+    const result = await res.json();
+    setUploading(false);
+
+    if (res.ok) {
+      setImages((prev) => [...prev, result.data.url]);
+    } else {
+      alert(result.message || "Upload thất bại");
+    }
+  }
+
   function handleVariantChange(
     index: number,
     field: keyof Variant,
@@ -80,10 +107,7 @@ export default function AdminProductForm({
       price: Number(price),
       salePrice: salePrice ? Number(salePrice) : undefined,
       category,
-      images: imageText
-        .split("\n")
-        .map((i) => i.trim())
-        .filter(Boolean),
+      images,
       variants,
       isFeatured,
       isActive,
@@ -139,13 +163,42 @@ export default function AdminProductForm({
         </select>
       </div>
 
-      <textarea
-        className="w-full border rounded px-4 py-3"
-        placeholder="Mỗi dòng là 1 URL ảnh"
-        rows={4}
-        value={imageText}
-        onChange={(e) => setImageText(e.target.value)}
-      />
+      <div className="space-y-3">
+        <label className="block font-medium">Ảnh sản phẩm</label>
+
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleFileChange}
+          className="border rounded px-4 py-3 w-full"
+        />
+
+        {uploading && (
+          <p className="text-sm text-gray-500">Đang upload ảnh...</p>
+        )}
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {images.map((img, index) => (
+            <div
+              key={index}
+              className="relative border rounded overflow-hidden"
+            >
+              <img
+                src={img}
+                alt={`Ảnh ${index + 1}`}
+                className="w-full h-32 object-cover"
+              />
+              <button
+                type="button"
+                onClick={() => setImages(images.filter((_, i) => i !== index))}
+                className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded"
+              >
+                Xóa
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
 
       <div className="space-y-3">
         <div className="flex items-center justify-between">

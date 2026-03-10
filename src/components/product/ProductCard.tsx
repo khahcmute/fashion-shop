@@ -7,7 +7,7 @@ type Props = {
 
 export default function ProductCard({ product }: Props) {
   return (
-    <div className="border rounded-lg overflow-hidden shadow-sm">
+    <div className="border rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition bg-white">
       <img
         src={product.images[0] || "https://placehold.co/600x800?text=No+Image"}
         alt={product.name}
