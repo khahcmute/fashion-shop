@@ -26,7 +26,8 @@ export default function UserNavbar() {
   const totalCartItems = useMemo(() => {
     return items.reduce((sum, item) => sum + item.quantity, 0);
   }, [items]);
-
+  const [showCartDropdown, setShowCartDropdown] = useState(false);
+  const cartRef = useRef<HTMLDivElement | null>(null);
   const suggestions = useMemo(() => {
     if (!search.trim()) return [];
     return products
@@ -35,7 +36,13 @@ export default function UserNavbar() {
       )
       .slice(0, 6);
   }, [products, search]);
+  const cartPreviewItems = items.slice(0, 4);
 
+  const totalCartPrice = useMemo(() => {
+    return items.reduce((sum, item) => {
+      return sum + item.priceAtAddedTime * item.quantity;
+    }, 0);
+  }, [items]);
   useEffect(() => {
     if (isAuthenticated) {
       dispatch(fetchCart());
@@ -56,6 +63,9 @@ export default function UserNavbar() {
 
       if (searchRef.current && !searchRef.current.contains(target)) {
         setShowSuggestions(false);
+      }
+      if (cartRef.current && !cartRef.current.contains(target)) {
+        setShowCartDropdown(false);
       }
     }
 
@@ -148,14 +158,96 @@ export default function UserNavbar() {
         </div>
 
         <div className="flex items-center gap-3 shrink-0">
-          <Link href="/cart" className="relative px-2 py-2">
-            <span className="text-2xl">🛒</span>
-            {totalCartItems > 0 && (
-              <span className="absolute -top-1 -right-1 min-w-5 h-5 px-1 rounded-full bg-red-500 text-white text-xs flex items-center justify-center">
-                {totalCartItems}
-              </span>
+          <div ref={cartRef} className="relative">
+            <button
+              onClick={() => setShowCartDropdown((prev) => !prev)}
+              className="relative px-2 py-2"
+            >
+              <span className="text-2xl">🛒</span>
+              {totalCartItems > 0 && (
+                <span className="absolute -top-1 -right-1 min-w-5 h-5 px-1 rounded-full bg-red-500 text-white text-xs flex items-center justify-center">
+                  {totalCartItems}
+                </span>
+              )}
+            </button>
+
+            {showCartDropdown && (
+              <div className="absolute right-0 top-full mt-2 w-96 bg-white border rounded-3xl shadow-xl overflow-hidden">
+                <div className="p-4 border-b">
+                  <h3 className="font-semibold text-lg">Giỏ hàng</h3>
+                </div>
+
+                {items.length === 0 ? (
+                  <div className="p-4 text-sm text-gray-500">
+                    Giỏ hàng đang trống.
+                  </div>
+                ) : (
+                  <>
+                    <div className="max-h-96 overflow-auto">
+                      {cartPreviewItems.map((item) => (
+                        <div
+                          key={item._id}
+                          className="flex gap-3 p-4 border-b last:border-b-0"
+                        >
+                          <img
+                            src={
+                              item.product.images[0] ||
+                              "https://placehold.co/100x120?text=No+Image"
+                            }
+                            alt={item.product.name}
+                            className="w-16 h-20 object-cover rounded-xl"
+                          />
+                          <div className="flex-1">
+                            <p className="font-medium text-sm">
+                              {item.product.name}
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              {item.color} / {item.size}
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              SL: {item.quantity}
+                            </p>
+                            <p className="text-sm font-semibold mt-1">
+                              {(
+                                item.priceAtAddedTime * item.quantity
+                              ).toLocaleString("vi-VN")}
+                              đ
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="p-4 border-t">
+                      <div className="flex items-center justify-between mb-4">
+                        <span className="font-medium">Tổng</span>
+                        <span className="font-bold">
+                          {totalCartPrice.toLocaleString("vi-VN")}đ
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <Link
+                          href="/cart"
+                          onClick={() => setShowCartDropdown(false)}
+                          className="text-center border px-4 py-3 rounded-full hover:bg-gray-50"
+                        >
+                          Xem giỏ hàng
+                        </Link>
+                        <Link
+                          href="/checkout"
+                          onClick={() => setShowCartDropdown(false)}
+                          className="text-center bg-black text-white px-4 py-3 rounded-full"
+                        >
+                          Thanh toán
+                        </Link>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
             )}
-          </Link>
+          </div>
 
           {!isAuthenticated ? (
             <div className="flex items-center gap-2">

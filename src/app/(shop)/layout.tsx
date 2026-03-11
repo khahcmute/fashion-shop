@@ -1,4 +1,5 @@
 import UserNavbar from "@/components/UserNavbar";
+import Footer from "@/components/Footer";
 
 export default function ShopLayout({
   children,
@@ -9,6 +10,7 @@ export default function ShopLayout({
     <>
       <UserNavbar />
       <main>{children}</main>
+      <Footer />
     </>
   );
 }
