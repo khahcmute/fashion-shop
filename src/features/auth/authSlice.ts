@@ -13,6 +13,8 @@ type AuthState = {
   loading: boolean;
   error: string | null;
   isAuthenticated: boolean;
+  needVerify: boolean;
+  verifyEmail: string | null;
 };
 
 const initialState: AuthState = {
@@ -20,6 +22,8 @@ const initialState: AuthState = {
   loading: false,
   error: null,
   isAuthenticated: false,
+  needVerify: false,
+  verifyEmail: null,
 };
 
 export const registerUser = createAsyncThunk(
@@ -65,12 +69,14 @@ export const loginUser = createAsyncThunk(
       const result = await res.json();
 
       if (!res.ok) {
-        return rejectWithValue(result.message || "Đăng nhập thất bại");
+        return rejectWithValue(result);
       }
 
       return result.data;
     } catch {
-      return rejectWithValue("Có lỗi xảy ra");
+      return rejectWithValue({
+        message: "Có lỗi xảy ra",
+      });
     }
   },
 );
@@ -117,7 +123,13 @@ export const logoutUser = createAsyncThunk(
 const authSlice = createSlice({
   name: "auth",
   initialState,
-  reducers: {},
+  reducers: {
+    clearAuthMessages: (state) => {
+      state.error = null;
+      state.needVerify = false;
+      state.verifyEmail = null;
+    },
+  },
   extraReducers: (builder) => {
     builder
       // register
@@ -137,15 +149,33 @@ const authSlice = createSlice({
       .addCase(loginUser.pending, (state) => {
         state.loading = true;
         state.error = null;
+        state.needVerify = false;
+        state.verifyEmail = null;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
         state.user = action.payload;
         state.isAuthenticated = true;
+        state.needVerify = false;
+        state.verifyEmail = null;
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload as string;
+
+        const payload = action.payload as
+          | { message?: string; needVerify?: boolean; email?: string }
+          | string;
+
+        if (typeof payload === "string") {
+          state.error = payload;
+          state.needVerify = false;
+          state.verifyEmail = null;
+        } else {
+          state.error = payload.message || "Đăng nhập thất bại";
+          state.needVerify = !!payload.needVerify;
+          state.verifyEmail = payload.email || null;
+        }
+
         state.user = null;
         state.isAuthenticated = false;
       })
@@ -170,8 +200,11 @@ const authSlice = createSlice({
         state.user = null;
         state.isAuthenticated = false;
         state.error = null;
+        state.needVerify = false;
+        state.verifyEmail = null;
       });
   },
 });
 
+export const { clearAuthMessages } = authSlice.actions;
 export default authSlice.reducer;

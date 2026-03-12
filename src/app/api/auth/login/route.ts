@@ -48,6 +48,19 @@ export async function POST(req: Request) {
       );
     }
 
+    // CHẶN LOGIN NẾU CHƯA VERIFY EMAIL
+    if (!user.isEmailVerified) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Tài khoản chưa được kích hoạt. Vui lòng xác thực email.",
+          needVerify: true,
+          email: user.email,
+        },
+        { status: 403 },
+      );
+    }
+
     const token = signToken({
       userId: user._id.toString(),
       email: user.email,

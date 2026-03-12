@@ -172,7 +172,7 @@ export default function UserNavbar() {
             </button>
 
             {showCartDropdown && (
-              <div className="absolute right-0 top-full mt-2 w-96 bg-white border rounded-3xl shadow-xl overflow-hidden">
+              <div className=" absolute right-0 top-full mt-2 w-96 bg-white border rounded-3xl shadow-xl overflow-hidden">
                 <div className="p-4 border-b">
                   <h3 className="font-semibold text-lg">Giỏ hàng</h3>
                 </div>

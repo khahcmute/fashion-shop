@@ -3,6 +3,8 @@ import bcrypt from "bcryptjs";
 import { connectDB } from "@/lib/mongoose";
 import User from "@/models/User";
 import { registerSchema } from "@/schemas/auth.schema";
+import { generateOtp } from "@/lib/otp";
+import { sendEmailOtp } from "@/lib/mail";
 
 export async function POST(req: Request) {
   try {
@@ -24,42 +26,49 @@ export async function POST(req: Request) {
     const { name, email, password } = parsed.data;
 
     const existingUser = await User.findOne({ email });
-
     if (existingUser) {
       return NextResponse.json(
-        {
-          success: false,
-          message: "Email đã tồn tại",
-        },
+        { success: false, message: "Email đã tồn tại" },
         { status: 400 },
       );
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
+    const otp = generateOtp(6);
+    const otpExpires = new Date(Date.now() + 5 * 60 * 1000);
 
     const user = await User.create({
       name,
       email,
       password: hashedPassword,
       role: "USER",
+      isEmailVerified: false,
+      emailOtp: otp,
+      emailOtpExpires: otpExpires,
     });
+
+    try {
+      await sendEmailOtp({
+        to: user.email,
+        name: user.name,
+        otp,
+      });
+    } catch (mailError) {
+      console.error("Send OTP email error:", mailError);
+    }
 
     return NextResponse.json(
       {
         success: true,
-        message: "Đăng ký thành công",
+        message: "Đăng ký thành công. Vui lòng kiểm tra email để lấy mã OTP.",
         data: {
-          id: user._id,
-          name: user.name,
           email: user.email,
-          role: user.role,
         },
       },
       { status: 201 },
     );
   } catch (error) {
     console.error("Register error:", error);
-
     return NextResponse.json(
       {
         success: false,
