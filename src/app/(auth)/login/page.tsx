@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { loginUser } from "@/features/auth/authSlice";
@@ -32,36 +33,139 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="max-w-md mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4">Đăng nhập</h1>
+    <main className="min-h-screen bg-gradient-to-br from-neutral-100 via-white to-neutral-200">
+      <div className="grid min-h-screen lg:grid-cols-2">
+        <div className="hidden lg:flex items-center justify-center bg-[radial-gradient(circle_at_top,_#404040,_#0a0a0a_55%)] p-12 text-white">
+          <div className="max-w-lg">
+            <p className="text-sm uppercase tracking-[0.3em] text-white/70">
+              Fashion Shop
+            </p>
+            <h1 className="mt-6 text-5xl font-bold leading-tight">
+              Welcome back.
+            </h1>
+            <p className="mt-5 text-lg text-white/75">
+              Đăng nhập để tiếp tục mua sắm, kiểm tra giỏ hàng và theo dõi đơn
+              hàng của bạn.
+            </p>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <input
-          type="email"
-          placeholder="Email"
-          className="w-full border p-3 rounded"
-          value={form.email}
-          onChange={(e) => setForm({ ...form, email: e.target.value })}
-        />
+            <div className="mt-10 space-y-4">
+              <div className="rounded-2xl border border-white/10 bg-white/10 p-5 backdrop-blur">
+                <p className="font-semibold">Mua sắm nhanh hơn</p>
+                <p className="mt-1 text-sm text-white/70">
+                  Lưu thông tin và tiếp tục đơn hàng chỉ trong vài bước.
+                </p>
+              </div>
 
-        <input
-          type="password"
-          placeholder="Mật khẩu"
-          className="w-full border p-3 rounded"
-          value={form.password}
-          onChange={(e) => setForm({ ...form, password: e.target.value })}
-        />
+              <div className="rounded-2xl border border-white/10 bg-white/10 p-5 backdrop-blur">
+                <p className="font-semibold">Theo dõi đơn hàng</p>
+                <p className="mt-1 text-sm text-white/70">
+                  Xem lịch sử mua hàng và trạng thái giao hàng dễ dàng.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
 
-        {error && <p className="text-red-500 text-sm">{error}</p>}
+        <div className="flex items-center justify-center px-6 py-10">
+          <div className="w-full max-w-md">
+            <div className="mb-8 text-center lg:hidden">
+              <p className="text-sm uppercase tracking-[0.3em] text-neutral-500">
+                Fashion Shop
+              </p>
+              <h1 className="mt-3 text-3xl font-bold text-neutral-900">
+                Đăng nhập
+              </h1>
+              <p className="mt-2 text-sm text-neutral-600">
+                Chào mừng bạn quay trở lại
+              </p>
+            </div>
 
-        <button
-          type="submit"
-          className="w-full bg-black text-white py-3 rounded"
-          disabled={loading}
-        >
-          {loading ? "Đang xử lý..." : "Đăng nhập"}
-        </button>
-      </form>
+            <div className="rounded-3xl border border-neutral-200 bg-white/80 p-8 shadow-2xl backdrop-blur">
+              <div className="mb-6 hidden lg:block">
+                <h2 className="text-3xl font-bold text-neutral-900">
+                  Đăng nhập
+                </h2>
+                <p className="mt-2 text-sm text-neutral-500">
+                  Nhập thông tin của bạn để tiếp tục
+                </p>
+              </div>
+
+              <form onSubmit={handleSubmit} className="space-y-5">
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-neutral-700">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    placeholder="Nhập email"
+                    className="w-full rounded-xl border border-neutral-300 bg-white px-4 py-3 outline-none transition focus:border-black focus:ring-2 focus:ring-black/10"
+                    value={form.email}
+                    onChange={(e) =>
+                      setForm({ ...form, email: e.target.value })
+                    }
+                  />
+                </div>
+
+                <div>
+                  <div className="mb-2 flex items-center justify-between">
+                    <label className="block text-sm font-medium text-neutral-700">
+                      Mật khẩu
+                    </label>
+                    <Link
+                      href="/forgot-password"
+                      className="text-xs font-medium text-neutral-500 hover:text-black"
+                    >
+                      Quên mật khẩu?
+                    </Link>
+                  </div>
+
+                  <input
+                    type="password"
+                    placeholder="Nhập mật khẩu"
+                    className="w-full rounded-xl border border-neutral-300 bg-white px-4 py-3 outline-none transition focus:border-black focus:ring-2 focus:ring-black/10"
+                    value={form.password}
+                    onChange={(e) =>
+                      setForm({ ...form, password: e.target.value })
+                    }
+                  />
+                </div>
+
+                {error && (
+                  <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+                    {error}
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  className="w-full rounded-xl bg-black py-3.5 font-semibold text-white transition hover:bg-neutral-800 disabled:cursor-not-allowed disabled:opacity-70"
+                  disabled={loading}
+                >
+                  {loading ? "Đang xử lý..." : "Đăng nhập"}
+                </button>
+              </form>
+
+              <div className="my-6 flex items-center gap-3">
+                <div className="h-px flex-1 bg-neutral-200" />
+                <span className="text-xs uppercase tracking-widest text-neutral-400">
+                  Fashion Shop
+                </span>
+                <div className="h-px flex-1 bg-neutral-200" />
+              </div>
+
+              <p className="text-center text-sm text-neutral-600">
+                Chưa có tài khoản?{" "}
+                <Link
+                  href="/register"
+                  className="font-semibold text-black underline underline-offset-4"
+                >
+                  Đăng ký ngay
+                </Link>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
     </main>
   );
 }
