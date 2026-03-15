@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { clearAuthMessages, loginUser } from "@/features/auth/authSlice";
 import { useRouter } from "next/navigation";
+import GoogleLoginButton from "@/components/GoogleLoginButton";
 
 export default function LoginPage() {
   const dispatch = useAppDispatch();
@@ -160,6 +161,7 @@ export default function LoginPage() {
                 >
                   {loading ? "Đang xử lý..." : "Đăng nhập"}
                 </button>
+                <GoogleLoginButton />
               </form>
 
               <div className="my-6 flex items-center gap-3">
