@@ -24,6 +24,9 @@ export interface IOrder {
   shippingAddress: IShippingAddress;
   totalAmount: number;
   status: "PENDING" | "CONFIRMED" | "SHIPPING" | "DELIVERED" | "CANCELLED";
+  couponCode?: string;
+  discountAmount?: number;
+  finalAmount?: number;
 }
 
 const OrderItemSchema = new Schema<IOrderItem>(
@@ -75,6 +78,20 @@ const OrderSchema = new Schema<IOrder>(
       type: String,
       enum: ["PENDING", "CONFIRMED", "SHIPPING", "DELIVERED", "CANCELLED"],
       default: "PENDING",
+    },
+    couponCode: {
+      type: String,
+      default: "",
+    },
+    discountAmount: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    finalAmount: {
+      type: Number,
+      default: 0,
+      min: 0,
     },
   },
   { timestamps: true },

@@ -6,6 +6,7 @@ import CartItem from "@/models/CartItem";
 import Product from "@/models/Product";
 import Order from "@/models/Order";
 import { getAuthUser } from "@/lib/getAuthUser";
+import Coupon from "@/models/Coupon";
 
 export async function POST(req: Request) {
   await connectDB();
@@ -20,7 +21,7 @@ export async function POST(req: Request) {
   }
 
   const body = await req.json();
-  const { fullName, phone, address, city, district } = body;
+  const { fullName, phone, address, city, district, couponCode } = body;
 
   if (!fullName || !phone || !address || !city || !district) {
     return NextResponse.json(
@@ -86,6 +87,48 @@ export async function POST(req: Request) {
         totalAmount += item.priceAtAddedTime * item.quantity;
       }
 
+      let discountAmount = 0;
+      let appliedCouponCode = "";
+
+      if (couponCode) {
+        const coupon = await Coupon.findOne({
+          code: couponCode.trim().toUpperCase(),
+          isActive: true,
+        }).session(session);
+
+        if (!coupon) {
+          throw new Error("Mã giảm giá không tồn tại");
+        }
+
+        if (coupon.expiresAt.getTime() < Date.now()) {
+          throw new Error("Mã giảm giá đã hết hạn");
+        }
+
+        if (coupon.usedCount >= coupon.usageLimit) {
+          throw new Error("Mã giảm giá đã hết lượt sử dụng");
+        }
+
+        if (totalAmount < coupon.minOrderValue) {
+          throw new Error("Đơn hàng chưa đạt giá trị tối thiểu để áp mã");
+        }
+
+        if (coupon.discountType === "PERCENT") {
+          discountAmount = (totalAmount * coupon.discountValue) / 100;
+
+          if (coupon.maxDiscount) {
+            discountAmount = Math.min(discountAmount, coupon.maxDiscount);
+          }
+        } else {
+          discountAmount = coupon.discountValue;
+        }
+
+        appliedCouponCode = coupon.code;
+        coupon.usedCount += 1;
+        await coupon.save({ session });
+      }
+
+      const finalAmount = Math.max(totalAmount - discountAmount, 0);
+
       const orders = await Order.create(
         [
           {
@@ -99,6 +142,9 @@ export async function POST(req: Request) {
               district,
             },
             totalAmount,
+            couponCode: appliedCouponCode,
+            discountAmount,
+            finalAmount,
             status: "PENDING",
           },
         ],

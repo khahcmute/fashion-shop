@@ -43,7 +43,10 @@ const initialState: OrderState = {
 
 export const createOrder = createAsyncThunk(
   "order/createOrder",
-  async (data: ShippingAddress, { rejectWithValue }) => {
+  async (
+    data: ShippingAddress & { couponCode?: string },
+    { rejectWithValue },
+  ) => {
     try {
       const res = await fetch("/api/orders", {
         method: "POST",

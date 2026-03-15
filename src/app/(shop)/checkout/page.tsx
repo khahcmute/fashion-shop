@@ -12,6 +12,9 @@ export default function CheckoutPage() {
 
   const { items } = useAppSelector((state) => state.cart);
   const { loading, error } = useAppSelector((state) => state.order);
+  const [couponCode, setCouponCode] = useState("");
+  const [couponMessage, setCouponMessage] = useState("");
+  const [discountAmount, setDiscountAmount] = useState(0);
 
   const [form, setForm] = useState({
     fullName: "",
@@ -31,10 +34,44 @@ export default function CheckoutPage() {
     }, 0);
   }, [items]);
 
+  const finalTotal = Math.max(total - discountAmount, 0);
+  async function handleApplyCoupon() {
+    setCouponMessage("");
+
+    const res = await fetch("/api/coupons/validate", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        code: couponCode,
+        totalAmount: total,
+      }),
+    });
+
+    const result = await res.json();
+
+    if (!res.ok) {
+      setDiscountAmount(0);
+      setCouponMessage(result.message || "Mã giảm giá không hợp lệ");
+      return;
+    }
+
+    setDiscountAmount(result.data.discountAmount || 0);
+    setCouponMessage(
+      `Áp mã thành công: giảm ${result.data.discountAmount.toLocaleString("vi-VN")}đ`,
+    );
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    const result = await dispatch(createOrder(form));
+    const result = await dispatch(
+      createOrder({
+        ...form,
+        couponCode,
+      }),
+    );
 
     if (createOrder.fulfilled.match(result)) {
       router.push("/orders");
@@ -88,7 +125,28 @@ export default function CheckoutPage() {
           />
 
           {error && <p className="text-red-500">{error}</p>}
+          <div className="space-y-3">
+            <div className="flex gap-3">
+              <input
+                type="text"
+                placeholder="Nhập mã giảm giá"
+                className="w-full border rounded px-4 py-3"
+                value={couponCode}
+                onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+              />
+              <button
+                type="button"
+                onClick={handleApplyCoupon}
+                className="border px-4 py-3 rounded"
+              >
+                Áp dụng
+              </button>
+            </div>
 
+            {couponMessage && (
+              <p className="text-sm text-gray-700">{couponMessage}</p>
+            )}
+          </div>
           <button
             type="submit"
             disabled={loading}
@@ -124,10 +182,21 @@ export default function CheckoutPage() {
           ))}
         </div>
 
-        <div className="mt-6 border-t pt-4">
-          <h3 className="text-2xl font-bold">
-            Tổng: {total.toLocaleString("vi-VN")}đ
-          </h3>
+        <div className="mt-6 border-t pt-4 space-y-2">
+          <div className="flex justify-between">
+            <span>Tạm tính</span>
+            <span>{total.toLocaleString("vi-VN")}đ</span>
+          </div>
+
+          <div className="flex justify-between text-green-600">
+            <span>Giảm giá</span>
+            <span>-{discountAmount.toLocaleString("vi-VN")}đ</span>
+          </div>
+
+          <div className="flex justify-between text-2xl font-bold pt-2 border-t">
+            <span>Tổng thanh toán</span>
+            <span>{finalTotal.toLocaleString("vi-VN")}đ</span>
+          </div>
         </div>
       </div>
     </main>

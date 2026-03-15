@@ -7,6 +7,7 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { logoutUser } from "@/features/auth/authSlice";
 import { clearCartState, fetchCart } from "@/features/cart/cartSlice";
 import { fetchProducts } from "@/features/product/productSlice";
+import { ShoppingCart } from "lucide-react";
 
 export default function UserNavbar() {
   const dispatch = useAppDispatch();
@@ -163,7 +164,7 @@ export default function UserNavbar() {
               onClick={() => setShowCartDropdown((prev) => !prev)}
               className="relative px-2 py-2"
             >
-              <span className="text-2xl">🛒</span>
+              <ShoppingCart className="w-6 h-6 mr-1" />
               {totalCartItems > 0 && (
                 <span className="absolute -top-1 -right-1 min-w-5 h-5 px-1 rounded-full bg-red-500 text-white text-xs flex items-center justify-center">
                   {totalCartItems}
@@ -172,7 +173,9 @@ export default function UserNavbar() {
             </button>
 
             {showCartDropdown && (
-              <div className=" absolute right-0 top-full mt-2 w-96 bg-white border rounded-3xl shadow-xl overflow-hidden">
+              <div className="absolute right-0 top-full mt-1 w-96 bg-white border border-gray-200 shadow-lg overflow-visible z-50">
+                <div className="absolute -top-2 right-4 w-4 h-4 bg-white border-l border-t border-gray-200 rotate-45" />
+
                 <div className="p-4 border-b">
                   <h3 className="font-semibold text-lg">Giỏ hàng</h3>
                 </div>
@@ -265,25 +268,33 @@ export default function UserNavbar() {
             <div ref={menuRef} className="relative">
               <button
                 onClick={() => setShowUserMenu((prev) => !prev)}
-                className="flex items-center gap-2 px-3 py-2 rounded-full border hover:bg-gray-50"
+                className="flex items-center gap-2 px-3 py-2 rounded-full hover:bg-gray-50"
               >
                 <span className="text-sm font-medium">{user?.name}</span>
                 <span>▾</span>
               </button>
 
               {showUserMenu && (
-                <div className="absolute right-0 top-full mt-2 w-52 bg-white border rounded-2xl shadow-lg overflow-hidden">
+                <div className="absolute right-0 top-full mt-1 w-52 bg-white border border-gray-200 shadow-md overflow-visible z-50">
+                  <div className="absolute -top-2 right-6 w-4 h-4 bg-white border-l border-t border-gray-200 rotate-45" />
+                  <Link
+                    href="/account"
+                    onClick={() => setShowUserMenu(false)}
+                    className="block px-4 py-3 hover:bg-gray-50"
+                  >
+                    Quản lý tài khoản
+                  </Link>
                   <Link
                     href="/orders"
                     onClick={() => setShowUserMenu(false)}
-                    className="block px-4 py-3 hover:bg-gray-50"
+                    className="block px-4 py-3 text-gray-800 hover:bg-gray-100"
                   >
                     Đơn hàng của tôi
                   </Link>
 
                   <button
                     onClick={handleLogout}
-                    className="w-full text-left px-4 py-3 hover:bg-gray-50 text-red-500"
+                    className="w-full text-left px-4 py-3 text-gray-800 hover:bg-gray-100"
                   >
                     Đăng xuất
                   </button>

@@ -52,57 +52,73 @@ export default function ProductsPage() {
   };
 
   return (
-    <main className="p-6 max-w-7xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6">Tất cả sản phẩm</h1>
+    <main className="max-w-7xl mx-auto px-4 py-8 md:px-6">
+      <div className="mb-8">
+        <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
+          Tất cả sản phẩm
+        </h1>
+        <p className="text-gray-500 mt-2">
+          Khám phá các sản phẩm mới, nổi bật và đang giảm giá.
+        </p>
+      </div>
 
-      <div className="grid md:grid-cols-4 gap-4 mb-6">
-        <input
-          type="text"
-          placeholder="Tìm theo tên sản phẩm..."
-          className="border rounded px-4 py-2 md:col-span-2"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
+      <div className="mb-8 rounded-3xl border bg-white p-4 md:p-5 shadow-sm">
+        <div className="grid md:grid-cols-4 gap-4">
+          <input
+            type="text"
+            placeholder="Tìm theo tên sản phẩm..."
+            className="md:col-span-2 rounded-2xl border border-gray-300 px-4 py-3 outline-none transition focus:border-black"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
 
-        <select
-          className="border rounded px-4 py-2"
-          value={selectedCategory}
-          onChange={(e) => setSelectedCategory(e.target.value)}
-        >
-          <option value="">Tất cả danh mục</option>
-          {categories.map((category) => (
-            <option key={category._id} value={category.slug}>
-              {category.name}
-            </option>
-          ))}
-        </select>
-
-        <div className="flex gap-2">
-          <button
-            onClick={handleFilter}
-            className="bg-black text-white px-4 py-2 rounded w-full"
+          <select
+            className="rounded-2xl border border-gray-300 px-4 py-3 outline-none transition focus:border-black"
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
           >
-            Lọc
-          </button>
+            <option value="">Tất cả danh mục</option>
+            {categories.map((category) => (
+              <option key={category._id} value={category.slug}>
+                {category.name}
+              </option>
+            ))}
+          </select>
 
-          <button
-            onClick={handleReset}
-            className="border px-4 py-2 rounded w-full"
-          >
-            Reset
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={handleFilter}
+              className="w-full rounded-2xl bg-black px-4 py-3 text-white font-medium transition hover:bg-gray-900"
+            >
+              Lọc
+            </button>
+
+            <button
+              onClick={handleReset}
+              className="w-full rounded-2xl border px-4 py-3 font-medium transition hover:bg-gray-50"
+            >
+              Reset
+            </button>
+          </div>
         </div>
       </div>
 
-      {loading && <p>Đang tải sản phẩm...</p>}
+      {loading && (
+        <div className="py-10 text-center text-gray-500">
+          Đang tải sản phẩm...
+        </div>
+      )}
+
       {error && <p className="text-red-500">{error}</p>}
 
       {!loading && !error && products.length === 0 && (
-        <p>Không có sản phẩm phù hợp.</p>
+        <div className="rounded-3xl border bg-white py-16 text-center text-gray-500 shadow-sm">
+          Không có sản phẩm phù hợp.
+        </div>
       )}
 
       {!loading && !error && products.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-7">
           {products.map((product) => (
             <ProductCard key={product._id} product={product} />
           ))}
