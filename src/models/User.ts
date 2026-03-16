@@ -6,6 +6,7 @@ export interface IUser {
   name: string;
   email: string;
   password: string;
+  provider: "credentials" | "google";
   role: UserRole;
   phone?: string;
   avatar?: string;
@@ -27,7 +28,17 @@ const UserSchema = new Schema<IUser>(
       trim: true,
       lowercase: true,
     },
-    password: { type: String, required: true },
+    password: {
+      type: String,
+      required: function (this: any) {
+        return this.provider === "credentials";
+      },
+    },
+    provider: {
+      type: String,
+      enum: ["credentials", "google"],
+      default: "credentials",
+    },
     role: {
       type: String,
       enum: ["USER", "ADMIN"],

@@ -36,6 +36,16 @@ export async function POST(req: Request) {
       );
     }
 
+    if (!user.password) {
+      return NextResponse.json(
+        {
+          success: false,
+          message:
+            "Tài khoản này sử dụng đăng nhập Google. Vui lòng đăng nhập bằng Google.",
+        },
+        { status: 400 },
+      );
+    }
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {

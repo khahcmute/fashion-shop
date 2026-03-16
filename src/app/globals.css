@@ -24,3 +24,62 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Thêm vào file global.css */
+
+@keyframes stockPulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.low-stock-pulse {
+  animation: stockPulse 1.5s ease-in-out infinite;
+}
+
+/* Stock badge styles */
+.stock-badge {
+  @apply px-3 py-1 text-sm font-bold border-2;
+}
+
+.stock-badge-in-stock {
+  @apply bg-green-500 text-white border-white;
+}
+
+.stock-badge-low-stock {
+  @apply bg-orange-500 text-white border-white;
+}
+
+.stock-badge-out-of-stock {
+  @apply bg-red-600 text-white border-white;
+}
+
+/* Variant selector styles */
+.variant-selector {
+  @apply w-full border-2 border-black p-3 appearance-none bg-white cursor-pointer;
+}
+
+.variant-selector:focus {
+  @apply outline-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)];
+}
+
+.variant-selector option:disabled {
+  @apply text-gray-400 bg-gray-100;
+}
+
+/* Stock indicator */
+.stock-indicator {
+  @apply flex items-center gap-2 px-3 py-1 border-2;
+}
+
+.stock-indicator-in-stock {
+  @apply text-green-600 border-green-600;
+}
+
+.stock-indicator-out-of-stock {
+  @apply text-red-600 border-red-600;
+}

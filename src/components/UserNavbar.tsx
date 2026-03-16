@@ -8,11 +8,12 @@ import { logoutUser } from "@/features/auth/authSlice";
 import { clearCartState, fetchCart } from "@/features/cart/cartSlice";
 import { fetchProducts } from "@/features/product/productSlice";
 import { ShoppingCart } from "lucide-react";
+import { signOut as nextAuthSignOut, useSession } from "next-auth/react";
 
 export default function UserNavbar() {
   const dispatch = useAppDispatch();
   const router = useRouter();
-
+  const { status } = useSession();
   const { user, isAuthenticated } = useAppSelector((state) => state.auth);
   const { items } = useAppSelector((state) => state.cart);
   const { products } = useAppSelector((state) => state.product);
@@ -81,6 +82,11 @@ export default function UserNavbar() {
 
     if (logoutUser.fulfilled.match(result)) {
       dispatch(clearCartState());
+
+      if (status === "authenticated") {
+        await nextAuthSignOut({ redirect: false });
+      }
+
       setShowUserMenu(false);
       router.push("/login");
     }

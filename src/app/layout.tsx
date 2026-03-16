@@ -1,6 +1,8 @@
 import "./globals.css";
 import ReduxProvider from "@/store/provider";
 import AuthLoader from "@/components/AuthLoader";
+import AuthSessionProvider from "@/components/AuthSessionProvider";
+import GoogleSessionBridge from "@/components/GoogleSessionBridge";
 
 export const metadata = {
   title: "Fashion Shop",
@@ -15,10 +17,13 @@ export default function RootLayout({
   return (
     <html lang="vi">
       <body>
-        <ReduxProvider>
-          <AuthLoader />
-          {children}
-        </ReduxProvider>
+        <AuthSessionProvider>
+          <ReduxProvider>
+            <AuthLoader />
+            <GoogleSessionBridge />
+            {children}
+          </ReduxProvider>
+        </AuthSessionProvider>
       </body>
     </html>
   );
