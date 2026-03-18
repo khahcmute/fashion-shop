@@ -6,6 +6,7 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { clearAuthMessages, loginUser } from "@/features/auth/authSlice";
 import { useRouter } from "next/navigation";
 import GoogleLoginButton from "@/components/GoogleLoginButton";
+import { ArrowLeft } from "lucide-react";
 
 export default function LoginPage() {
   const dispatch = useAppDispatch();
@@ -86,6 +87,15 @@ export default function LoginPage() {
 
         <section className="flex items-center justify-center px-6 py-10">
           <div className="w-full max-w-md">
+            <div className="mb-4">
+              <Link
+                href="/"
+                className="inline-flex items-center gap-2 text-sm text-neutral-500 transition hover:text-black"
+              >
+                <ArrowLeft size={16} />
+                Trang chủ
+              </Link>
+            </div>
             <div className="mb-8 text-center lg:hidden">
               <p className="text-sm uppercase tracking-[0.35em] text-neutral-500">
                 Fashion Shop
