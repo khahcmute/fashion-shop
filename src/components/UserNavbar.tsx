@@ -140,7 +140,7 @@ export default function UserNavbar() {
 
           <div
             ref={searchRef}
-            className="relative col-span-3 order-3 w-full md:col-span-1 md:order-2 md:mx-auto md:max-w-3xl"
+            className="hidden md:block relative col-span-3 order-3 w-full md:col-span-1 md:order-2 md:mx-auto md:max-w-3xl"
           >
             <form onSubmit={handleSearchSubmit} className="relative w-full">
               <input
